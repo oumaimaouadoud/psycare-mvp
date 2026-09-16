@@ -1,0 +1,62 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AppointmentType {
+  CABINET
+  VIDEO
+}
+
+model Appointment {
+  id            String            @id @default(uuid())
+  patientName   String
+  phone         String
+  email         String?
+  startAt       DateTime
+  endAt         DateTime
+  type          AppointmentType   @default(CABINET)
+  status        AppointmentStatus @default(PENDING)
+  activeSlotKey String?           @unique
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([startAt])
+  @@index([status])
+}
+
+model AvailabilityRule {
+  id          Int      @id @default(autoincrement())
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  slotMinutes Int      @default(30)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([dayOfWeek, active])
+}
+
+model BlockedPeriod {
+  id        String   @id @default(uuid())
+  startAt   DateTime
+  endAt     DateTime
+  label     String?
+  createdAt DateTime @default(now())
+
+  @@index([startAt, endAt])
+}
