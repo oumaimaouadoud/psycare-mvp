@@ -13,7 +13,10 @@ export class AuthController {
     const { token } = await this.auth.login(dto.email, dto.password);
     response.cookie('admin_session', token, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite:
+        process.env.NODE_ENV === 'production'
+          ? 'none'
+          : 'lax',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 8 * 60 * 60 * 1000,
       path: '/',
@@ -23,7 +26,14 @@ export class AuthController {
 
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('admin_session', { path: '/' });
+      response.clearCookie('admin_session', {
+    path: '/',
+    sameSite:
+      process.env.NODE_ENV === 'production'
+        ? 'none'
+        : 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  });
     return { ok: true };
   }
 
