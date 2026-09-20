@@ -1,9 +1,16 @@
 import 'reflect-metadata';
 import cookieParser from 'cookie-parser';
-import helmet from 'helmet';
+
+import helmetModule from 'helmet';
+
+
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+
+
+const helmet = helmetModule as unknown as () => any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
