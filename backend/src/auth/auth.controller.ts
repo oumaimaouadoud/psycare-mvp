@@ -12,28 +12,26 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { token } = await this.auth.login(dto.email, dto.password);
     response.cookie('admin_session', token, {
-      httpOnly: true,
-      sameSite:
-        process.env.NODE_ENV === 'production'
-          ? 'none'
-          : 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 8 * 60 * 60 * 1000,
-      path: '/',
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge: 8 * 60 * 60 * 1000,
+  path: '/',
+});
+
     return { ok: true };
   }
 
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
-      response.clearCookie('admin_session', {
-    path: '/',
-    sameSite:
-      process.env.NODE_ENV === 'production'
-        ? 'none'
-        : 'lax',
-    secure: process.env.NODE_ENV === 'production',
-  });
+
+    response.clearCookie('admin_session', {
+  path: '/',
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+});
+
+
     return { ok: true };
   }
 
